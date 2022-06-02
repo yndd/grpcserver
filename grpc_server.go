@@ -72,6 +72,7 @@ func New(c Config, opts ...Option) *GrpcServer {
 		setUpdateHandlers:  map[string]SetUpdateHandler{},
 		setReplaceHandlers: map[string]SetReplaceHandler{},
 		setDeleteHandlers:  map[string]SetDeleteHandler{},
+		logger:             logging.NewNopLogger(),
 	}
 
 	for _, o := range opts {
@@ -114,6 +115,12 @@ func (s *GrpcServer) Start(ctx context.Context) error {
 func WithClient(c client.Client) func(*GrpcServer) {
 	return func(s *GrpcServer) {
 		s.client = c
+	}
+}
+
+func WithLogger(l logging.Logger) func(*GrpcServer) {
+	return func(s *GrpcServer) {
+		s.logger = l
 	}
 }
 
