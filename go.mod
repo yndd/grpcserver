@@ -1,4 +1,4 @@
-module github.com/yndd/grpc-server
+module github.com/yndd/grpcserver
 
 go 1.17
 
