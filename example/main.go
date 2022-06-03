@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/openconfig/gnmi/proto/gnmi"
-	grpcserver "github.com/yndd/grpc-server"
+	grpcserver "github.com/yndd/grpcserver"
 )
 
 func main() {

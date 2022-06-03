@@ -47,6 +47,18 @@ func (c *Config) setDefaults() {
 		}
 		c.Namespace = ns
 	}
+	if c.CertificateSecret == "" {
+		sec, ok := os.LookupEnv("GRPC_CERT_SECRET_NAME")
+		if ok {
+			c.CertificateSecret = sec
+		}
+	}
+	if c.CaCertificateSecret == "" {
+		sec, ok := os.LookupEnv("GRPC_CERT_SECRET_NAME")
+		if ok {
+			c.CertificateSecret = sec
+		}
+	}
 	if c.Timeout <= 0 {
 		c.Timeout = defaultTimeout
 	}
