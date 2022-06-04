@@ -31,6 +31,7 @@ func (s *GrpcServer) serverOpts(ctx context.Context) ([]grpc.ServerOption, error
 }
 
 func (s *GrpcServer) createTLSConfig(ctx context.Context) (*tls.Config, error) {
+	s.logger.Debug("grpc server createTLSConfig", "namespace", s.config.Namespace, "name", s.config.CaCertificateSecret)
 	caCert := &corev1.Secret{}
 	err := s.client.Get(ctx, types.NamespacedName{
 		Namespace: s.config.Namespace,

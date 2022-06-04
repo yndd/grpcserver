@@ -83,6 +83,7 @@ func New(c Config, opts ...Option) *GrpcServer {
 }
 
 func (s *GrpcServer) Start(ctx context.Context) error {
+	s.logger.Debug("grpc server start...")
 	l, err := net.Listen("tcp", s.config.Address)
 	if err != nil {
 		return errors.Wrap(err, "cannot listen")
