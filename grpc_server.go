@@ -107,10 +107,14 @@ func (s *GrpcServer) Start(ctx context.Context) error {
 		s.logger.Debug("grpc server with health...")
 	}
 	s.logger.Debug("starting grpc server...")
-	if err := grpcServer.Serve(l); err != nil {
-		s.logger.Debug("Errors", "error", err)
-		return errors.Wrap(err, "cannot serve grpc server")
-	}
+	errChannel := make(chan error)
+	go func() {
+		if err := grpcServer.Serve(l); err != nil {
+			s.logger.Debug("Errors", "error", err)
+			errChannel <- errors.Wrap(err, "cannot serve grpc server")
+		}
+		errChannel <- nil
+	}()
 	return nil
 }
 
