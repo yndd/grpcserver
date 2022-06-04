@@ -68,6 +68,7 @@ func New(c Config, opts ...Option) *GrpcServer {
 		config:             c,
 		sem:                semaphore.NewWeighted(c.MaxRPC),
 		m:                  &sync.RWMutex{},
+		cm:                 &sync.Mutex{},
 		getHandlers:        map[string]GetHandler{},
 		setUpdateHandlers:  map[string]SetUpdateHandler{},
 		setReplaceHandlers: map[string]SetReplaceHandler{},
