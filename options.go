@@ -41,7 +41,7 @@ func (s *GrpcServer) createTLSConfig(ctx context.Context) (*tls.Config, error) {
 	caCert := &corev1.Secret{}
 	err := s.client.Get(ctx, types.NamespacedName{
 		Namespace: s.config.Namespace,
-		Name:      s.config.CaCertificateSecret,
+		Name:      s.config.CertificateSecret,
 	}, caCert)
 	if err != nil {
 		return nil, err
