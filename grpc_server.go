@@ -68,6 +68,7 @@ func New(c Config, opts ...Option) *GrpcServer {
 		config:             c,
 		sem:                semaphore.NewWeighted(c.MaxRPC),
 		m:                  &sync.RWMutex{},
+		cm:                 &sync.Mutex{},
 		getHandlers:        map[string]GetHandler{},
 		setUpdateHandlers:  map[string]SetUpdateHandler{},
 		setReplaceHandlers: map[string]SetReplaceHandler{},
@@ -83,6 +84,8 @@ func New(c Config, opts ...Option) *GrpcServer {
 }
 
 func (s *GrpcServer) Start(ctx context.Context) error {
+	s.logger.Debug("grpc server start...")
+	s.logger.Debug("grpc server start", "namespace", s.config.Namespace, "CaCertificateSecret", s.config.CaCertificateSecret, "CertificateSecret", s.config.CertificateSecret)
 	l, err := net.Listen("tcp", s.config.Address)
 	if err != nil {
 		return errors.Wrap(err, "cannot listen")
@@ -105,10 +108,14 @@ func (s *GrpcServer) Start(ctx context.Context) error {
 		s.logger.Debug("grpc server with health...")
 	}
 	s.logger.Debug("starting grpc server...")
-	if err := grpcServer.Serve(l); err != nil {
-		s.logger.Debug("Errors", "error", err)
-		return errors.Wrap(err, "cannot serve grpc server")
-	}
+	errChannel := make(chan error)
+	go func() {
+		if err := grpcServer.Serve(l); err != nil {
+			s.logger.Debug("Errors", "error", err)
+			errChannel <- errors.Wrap(err, "cannot serve grpc server")
+		}
+		errChannel <- nil
+	}()
 	return nil
 }
 
