@@ -85,7 +85,12 @@ func New(c Config, opts ...Option) *GrpcServer {
 
 func (s *GrpcServer) Start(ctx context.Context) error {
 	s.logger.Debug("grpc server start...")
-	s.logger.Debug("grpc server start", "namespace", s.config.Namespace, "CaCertificateSecret", s.config.CaCertificateSecret, "CertificateSecret", s.config.CertificateSecret)
+	s.logger.Debug("grpc server start",
+		"address", s.config.Address,
+		"namespace", s.config.Namespace,
+		"CaCertificateSecret", s.config.CaCertificateSecret,
+		"CertificateSecret", s.config.CertificateSecret,
+	)
 	l, err := net.Listen("tcp", s.config.Address)
 	if err != nil {
 		return errors.Wrap(err, "cannot listen")
@@ -108,14 +113,11 @@ func (s *GrpcServer) Start(ctx context.Context) error {
 		s.logger.Debug("grpc server with health...")
 	}
 	s.logger.Debug("starting grpc server...")
-	errChannel := make(chan error)
-	go func() {
-		if err := grpcServer.Serve(l); err != nil {
-			s.logger.Debug("Errors", "error", err)
-			errChannel <- errors.Wrap(err, "cannot serve grpc server")
-		}
-		errChannel <- nil
-	}()
+	err = grpcServer.Serve(l)
+	if err != nil {
+		s.logger.Info("gRPC serve failed", "error", err)
+		return err
+	}
 	return nil
 }
 
