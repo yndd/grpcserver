@@ -56,7 +56,7 @@ func (c *Config) setDefaults() {
 	if c.CaCertificateSecret == "" {
 		sec, ok := os.LookupEnv("GRPC_CERT_SECRET_NAME")
 		if ok {
-			c.CertificateSecret = sec
+			c.CaCertificateSecret = sec
 		}
 	}
 	if c.Timeout <= 0 {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"os"
 	"time"
 
 	"google.golang.org/grpc"
@@ -32,16 +31,10 @@ func (s *GrpcServer) serverOpts(ctx context.Context) ([]grpc.ServerOption, error
 }
 
 func (s *GrpcServer) createTLSConfig(ctx context.Context) (*tls.Config, error) {
-	lookupname, ok := os.LookupEnv("GRPC_CERT_SECRET_NAME")
-	if !ok {
-		s.logger.Debug("grpc server createTLSConfig", "lookupName nok", lookupname)
-	}
-	s.logger.Debug("grpc server createTLSConfig", "lookup name", lookupname, "env name", os.Getenv("GRPC_CERT_SECRET_NAME"))
-	s.logger.Debug("grpc server createTLSConfig", "namespace", s.config.Namespace, "name", s.config.CaCertificateSecret)
 	caCert := &corev1.Secret{}
 	err := s.client.Get(ctx, types.NamespacedName{
 		Namespace: s.config.Namespace,
-		Name:      s.config.CertificateSecret,
+		Name:      s.config.CaCertificateSecret,
 	}, caCert)
 	if err != nil {
 		return nil, err

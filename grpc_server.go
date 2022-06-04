@@ -84,6 +84,7 @@ func New(c Config, opts ...Option) *GrpcServer {
 
 func (s *GrpcServer) Start(ctx context.Context) error {
 	s.logger.Debug("grpc server start...")
+	s.logger.Debug("grpc server start", "namespace", s.config.Namespace, "CaCertificateSecret", s.config.CaCertificateSecret, "CertificateSecret", s.config.CertificateSecret)
 	l, err := net.Listen("tcp", s.config.Address)
 	if err != nil {
 		return errors.Wrap(err, "cannot listen")
