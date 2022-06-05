@@ -10,6 +10,8 @@ import (
 )
 
 func (s *GrpcServer) Get(ctx context.Context, req *gnmi.GetRequest) (*gnmi.GetResponse, error) {
+	s.logger.Debug("gnmi get", "req prefix", req.GetPrefix(), "req path", req.GetPath())
+
 	ctx, cancel := context.WithTimeout(ctx, s.config.Timeout)
 	defer cancel()
 	err := s.acquireSem(ctx)
