@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"strings"
 	"time"
 
 	"google.golang.org/grpc"
@@ -20,13 +21,20 @@ func (s *GrpcServer) serverOpts(ctx context.Context) ([]grpc.ServerOption, error
 		}, nil
 	}
 
+	/*
 	tlsConfig, err := s.createTLSConfig(ctx)
+	if err != nil {
+		return nil, err
+	}
+	*/
+	tlsConfig, err := loadTLSCredentials()
 	if err != nil {
 		return nil, err
 	}
 	return []grpc.ServerOption{
 		grpc.Creds(credentials.NewTLS(tlsConfig)),
 	}, nil
+	
 
 }
 
@@ -43,7 +51,7 @@ func (s *GrpcServer) createTLSConfig(ctx context.Context) (*tls.Config, error) {
 
 	tlsConfig := &tls.Config{
 		GetCertificate: s.readCerts,
-		ClientAuth: tls.NoClientCert,
+		ClientAuth:     tls.NoClientCert,
 	}
 	if len(ca) != 0 {
 		caCertPool := x509.NewCertPool()
@@ -80,4 +88,24 @@ func (s *GrpcServer) readCerts(_ *tls.ClientHelloInfo) (*tls.Certificate, error)
 	}
 
 	return s.cert, nil
+}
+
+const (
+	certDir = "/tmp/k8s-grpc-server/serving-certs/"
+)
+
+func loadTLSCredentials() (*tls.Config, error) {
+	// Load server's certificate and private key
+	certFile := strings.Join([]string{certDir, "tls.crt"}, "/")
+	keyFile := strings.Join([]string{certDir, "tls.key"}, "/")
+	serverCert, err := tls.LoadX509KeyPair(certFile, keyFile)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create the credentials and return it
+	return &tls.Config{
+		Certificates: []tls.Certificate{serverCert},
+		ClientAuth:   tls.NoClientCert,
+	}, nil
 }
