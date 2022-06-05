@@ -43,6 +43,7 @@ func (s *GrpcServer) createTLSConfig(ctx context.Context) (*tls.Config, error) {
 
 	tlsConfig := &tls.Config{
 		GetCertificate: s.readCerts,
+		ClientAuth: tls.NoClientCert,
 	}
 	if len(ca) != 0 {
 		caCertPool := x509.NewCertPool()

@@ -19,6 +19,7 @@ import (
 type GrpcServer struct {
 	config Config
 	gnmi.UnimplementedGNMIServer
+	healthpb.UnimplementedHealthServer
 
 	sem *semaphore.Weighted
 
