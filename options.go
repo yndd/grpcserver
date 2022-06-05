@@ -27,7 +27,7 @@ func (s *GrpcServer) serverOpts(ctx context.Context) ([]grpc.ServerOption, error
 		return nil, err
 	}
 	*/
-	tlsConfig, err := loadTLSCredentials()
+	tlsConfig, err := s.loadTLSCredentials()
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ const (
 	certDir = "/tmp/k8s-grpc-server/serving-certs/"
 )
 
-func loadTLSCredentials() (*tls.Config, error) {
+func (s *GrpcServer) loadTLSCredentials() (*tls.Config, error) {
 	// Load server's certificate and private key
 	certFile := strings.Join([]string{certDir, "tls.crt"}, "/")
 	keyFile := strings.Join([]string{certDir, "tls.key"}, "/")
