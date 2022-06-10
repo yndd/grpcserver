@@ -112,7 +112,7 @@ func (s *GrpcServer) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRe
 
 func getOrigin(pf, p *gnmi.Path) string {
 	if p.GetOrigin() != "" {
-		return pf.GetOrigin()
+		return p.GetOrigin()
 	}
-	return p.GetOrigin()
+	return pf.GetOrigin()
 }
